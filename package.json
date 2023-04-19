@@ -1,8 +1,9 @@
 {
 	"name": "f14-fetch-interceptor",
-	"version": "0.1.0",
-	"description": "A simple tool for fetch data and intercept 401 error",
-	"main": "src/index.ts",
+	"version": "0.1.5",
+	"description": "A simple tool for fetch data and intercept errors",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"scripts": {
 		"clear:dist": "rimraf dist",
 		"build": "npm run clear:dist && tsc",
@@ -12,7 +13,7 @@
 		"type": "git",
 		"url": "git+https://github.com/sniki19/f14-fetch-interceptor.git"
 	},
-	"author": "sniki19",
+	"author": "Artem Kurilik",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/sniki19/f14-fetch-interceptor/issues"

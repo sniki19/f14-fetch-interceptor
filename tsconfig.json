@@ -1,12 +1,15 @@
 {
 	"compilerOptions": {
-		"target": "ES2016",
+		"target": "ES6",
 		"lib": [
-			"ES2016",
-			"DOM"
+			"DOM",
+			"ES6",
+			"DOM.Iterable",
+			"ScriptHost",
+			"ES2016.Array.Include"
 		],
+		"module": "CommonJS",
 		"allowJs": true,
-		"module": "ESNext",
 		"rootDir": "src",
 		"outDir": "dist",
 		"isolatedModules": true,
@@ -15,6 +18,11 @@
 		"strict": true,
 		// "sourceMap": true,
 		"noImplicitAny": true,
-		"skipLibCheck": true
-	}
+		"skipLibCheck": true,
+		"declaration": true
+	},
+	"exclude": [
+		"node_modules",
+		"dist"
+	]
 }
