@@ -1,9 +1,16 @@
-# f14-fetch-interceptor
+# F14 Fetch Interceptor
 
-A simple tool for fetch data and intercept 401 error
+A simple tool for fetch data and intercept errors
 
-# Example
+## Quick start
 
+```
+npm i f14-fetch-interceptor
+```
+
+## Example
+
+```
 import F14 from 'f14-fetch-interceptor'
 
 export const f14 = new F14()
@@ -18,3 +25,5 @@ export const f14 = new F14()
 
 		return true
 	})
+```
+
