@@ -23,7 +23,7 @@ class F14 {
 	}
 
 	#generateRequest(method: string, url: string, useAuth: boolean, headers?: RequestHeaders, body?: RequestBody) {
-		const options: RequestOptions = {
+		const options: RequestInit = {
 			method: method,
 			headers: {
 				...this.#defaultHeaders,
@@ -31,18 +31,22 @@ class F14 {
 				...headers
 			}
 		}
+		if (useAuth) {
+			const token = this.#getAuth()
+			if (token) {
+				options.headers = {
+					...options.headers,
+					Authorization: `Bearer ${token}`
+				}
+			} else {
+				throw new Error('Auth feature isn\'t implemented. Please, set auth().')
+			}
+		}
 		if (body) {
 			options.body = JSON.stringify(body)
 		}
-		if (useAuth) {
-			const token = this.#getAuth()
-			options.headers = {
-				...options.headers,
-				Authorization: `Bearer ${token}`
-			}
-		}
 
-		return new Request(url, options as any)
+		return new Request(url, options)
 	}
 
 	async #executeRequest(req: () => Request): Promise<F14Response> {
