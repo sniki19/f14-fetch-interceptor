@@ -1,12 +1,19 @@
 import { AnyAction, Dispatch } from '@reduxjs/toolkit'
-import { ToolkitStore } from '@reduxjs/toolkit/dist/configureStore'
 import { F14Response, F14Settings, RequestBody, RequestHeaders, RequestOptions } from './types'
+
+type Store = {
+  dispatch: Dispatch<AnyAction>,
+  getState: () => any
+}
 
 class F14 {
   #apiUrl: string = '' // TODO: Add conditional type url | endpoint
   #defaultHeaders: RequestHeaders = {}
   #userHeaders: RequestHeaders = {}
-  #store: ToolkitStore<Object> | null = null // ToolkitStore<Object>
+  #store: Store = {
+    dispatch: (() => void 0) as Dispatch<AnyAction>,
+    getState: () => void 0
+  }
 
   #getAuth: (dispatch: Dispatch<AnyAction>, getState: () => any) => string | void = () => void 0 // TODO: Add typing
   #interceptResponse: (dispatch: Dispatch<AnyAction>, getState: () => any) => Promise<boolean> =
@@ -18,7 +25,7 @@ class F14 {
     return this
   }
 
-  injectStore<T extends ToolkitStore<Object>>(store: T): void {
+  injectStore<T extends Store>(store: T): void {
     this.#store = store
   }
 
@@ -45,10 +52,7 @@ class F14 {
     }
 
     if (useAuth) {
-      const token = this.#getAuth(
-        this.#store ? this.#store.dispatch : (() => void 0) as Dispatch<AnyAction>,
-        this.#store ? this.#store.getState : () => void 0
-      )
+      const token = this.#getAuth(this.#store.dispatch, this.#store.getState)
       if (token) {
         options.headers = {
           ...options.headers,
@@ -75,10 +79,7 @@ class F14 {
       let response = await fetch(req())
 
       if (response.status === 401) {
-        const result = await this.#interceptResponse(
-          this.#store ? this.#store.dispatch : (() => void 0) as Dispatch<AnyAction>,
-          this.#store ? this.#store.getState : () => void 0
-        )
+        const result = await this.#interceptResponse(this.#store.dispatch, this.#store.getState)
         if (result) {
           response = await fetch(req())
         }
