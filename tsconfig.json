@@ -1,28 +1,25 @@
 {
-	"compilerOptions": {
-		"target": "ES6",
-		"lib": [
-			"DOM",
-			"ES6",
-			"DOM.Iterable",
-			"ScriptHost",
-			"ES2016.Array.Include"
-		],
-		"module": "CommonJS",
-		"allowJs": true,
-		"rootDir": "src",
-		"outDir": "dist",
+  "compilerOptions": {
+    "target": "ES6",
+    "lib": [
+      "DOM",
+      "ES6",
+    ],
+    "module": "CommonJS",
+    "allowJs": true,
+    "rootDir": "src",
+    "outDir": "dist",
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"strict": true,
-		// "sourceMap": true,
+    "strict": true,
 		"noImplicitAny": true,
-		"skipLibCheck": true,
-		"declaration": true
-	},
-	"exclude": [
-		"node_modules",
-		"dist"
-	]
+    "skipLibCheck": true,
+    "declaration": true,
+    "baseUrl": "./src"
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

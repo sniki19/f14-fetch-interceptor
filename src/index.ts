@@ -1,104 +1,182 @@
-import { F14Response, RequestBody, RequestHeaders, RequestOptions } from './types'
+import { AnyAction, Dispatch } from '@reduxjs/toolkit'
+import { ToolkitStore } from '@reduxjs/toolkit/dist/configureStore'
+import { F14Response, F14Settings, RequestBody, RequestHeaders, RequestOptions } from './types'
 
 class F14 {
-	#defaultHeaders: RequestHeaders = {}
-	#userHeaders: RequestHeaders = {}
+  #apiUrl: string = '' // TODO: Add conditional type url | endpoint
+  #defaultHeaders: RequestHeaders = {}
+  #userHeaders: RequestHeaders = {}
+  #store: ToolkitStore<Object> | null = null // ToolkitStore<Object>
 
-	#getAuth: () => string | void = () => undefined
-	#interceptResponse: () => Promise<boolean> = () => Promise.resolve(false)
+  #getAuth: (dispatch: Dispatch<AnyAction>, getState: () => any) => string | void = () => void 0 // TODO: Add typing
+  #interceptResponse: (dispatch: Dispatch<AnyAction>, getState: () => any) => Promise<boolean> =
+    () => Promise.resolve(false) // TODO: Add typing
 
-	settings(headers: RequestHeaders) {
-		this.#userHeaders = { ...headers }
-		return this
-	}
+  settings({ apiUrl, headers }: F14Settings) {
+    this.#apiUrl = apiUrl || ''
+    this.#userHeaders = { ...headers }
+    return this
+  }
 
-	auth(cb: () => string | void) {
-		this.#getAuth = cb
-		return this
-	}
+  injectStore<T extends ToolkitStore<Object>>(store: T): void {
+    this.#store = store
+  }
 
-	intercept401(cb: () => Promise<true>) {
-		this.#interceptResponse = cb
-		return this
-	}
+  auth(cb: (dispatch: Dispatch<AnyAction>, getState: () => any) => string | void) {
+    this.#getAuth = cb
+    return this
+  }
 
-	#generateRequest(method: string, url: string, useAuth: boolean, headers?: RequestHeaders, body?: RequestBody) {
-		const options: RequestInit = {
-			method: method,
-			headers: {
-				...this.#defaultHeaders,
-				...this.#userHeaders,
-				...headers
-			}
-		}
-		if (useAuth) {
-			const token = this.#getAuth()
-			if (token) {
-				options.headers = {
-					...options.headers,
-					Authorization: `Bearer ${token}`
-				}
-			} else {
-				throw new Error('Auth feature isn\'t implemented. Please, set auth().')
-			}
-		}
-		if (body) {
-			options.body = JSON.stringify(body)
-		}
+  intercept401(cb: (dispatch: Dispatch<AnyAction>, getState: () => any) => Promise<true>) {
+    this.#interceptResponse = cb
+    return this
+  }
 
-		return new Request(url, options)
-	}
+  #generateRequest( // TODO: Add conditional type url | endpoint
+    method: string, endpoint: string, useAuth: boolean, headers?: RequestHeaders, body?: RequestBody
+  ): Request {
+    const options: RequestOptions = {
+      method: method,
+      headers: {
+        ...this.#defaultHeaders,
+        ...this.#userHeaders,
+        ...headers
+      }
+    }
 
-	async #executeRequest(req: () => Request): Promise<F14Response> {
-		try {
-			let response = await fetch(req())
+    if (useAuth) {
+      const token = this.#getAuth(
+        this.#store ? this.#store.dispatch : (() => void 0) as Dispatch<AnyAction>,
+        this.#store ? this.#store.getState : () => void 0
+      )
+      if (token) {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${token}`
+        }
+      } else {
+        throw new Error('Auth feature isn\'t implemented. Please, set auth().')
+      }
+    }
 
-			if (response.status === 401) {
-				const result = await this.#interceptResponse()
-				if (result) {
-					response = await fetch(req())
-				}
-			}
+    if (body) {
+      options.body = JSON.stringify(body)
+    }
 
-			const result = await response.json()
+    const targetUrl = this.#apiUrl
+      ? `${this.#apiUrl}${endpoint}`
+      : endpoint
 
-			return {
-				ok: response.ok,
-				status: response.status,
-				data: result
-			}
-		} catch (error: any) {
-			return {
-				ok: false,
-				status: 400,
-				data: error.message
-			}
-		}
-	}
+    return new Request(targetUrl, options)
+  }
 
-	get<T extends F14Response>(url: string, useAuth: boolean = false, headers?: RequestHeaders): Promise<T> {
-		const req = () => this.#generateRequest('GET', url, useAuth, headers ?? {})
-		const result = this.#executeRequest(req)
-		return result as Promise<T>
-	}
+  async #executeRequest(req: () => Request): Promise<F14Response> {
+    try {
+      let response = await fetch(req())
 
-	post<T extends F14Response>(url: string, useAuth: boolean = false, body?: RequestBody, headers?: RequestHeaders): Promise<T> {
-		const req = () => this.#generateRequest('POST', url, useAuth, headers ?? {}, body)
-		const result = this.#executeRequest(req)
-		return result as Promise<T>
-	}
+      if (response.status === 401) {
+        const result = await this.#interceptResponse(
+          this.#store ? this.#store.dispatch : (() => void 0) as Dispatch<AnyAction>,
+          this.#store ? this.#store.getState : () => void 0
+        )
+        if (result) {
+          response = await fetch(req())
+        }
+      }
 
-	patch<T extends F14Response>(url: string, useAuth: boolean = false, body?: RequestBody, headers?: RequestHeaders): Promise<T> {
-		const req = () => this.#generateRequest('PATCH', url, useAuth, headers ?? {}, body)
-		const result = this.#executeRequest(req)
-		return result as Promise<T>
-	}
+      const result = await response.json()
 
-	delete<T extends F14Response>(url: string, useAuth: boolean = false, headers?: RequestHeaders): Promise<T> {
-		const req = () => this.#generateRequest('DELETE', url, useAuth, headers ?? {})
-		const result = this.#executeRequest(req)
-		return result as Promise<T>
-	}
+      return {
+        ok: response.ok,
+        status: response.status,
+        data: result
+      }
+    } catch (error: any) {
+      return {
+        ok: false,
+        status: 400,
+        data: error.message
+      }
+    }
+  }
+
+  /**
+   * Execute GET fetch
+   * @param endpoint String that set endpoint or url (in case ApiUrl is empty)
+   * @param useAuth Boolean state that says use auth or no. Default: false
+   * @param headers A Headers object
+   * @returns
+   */
+  get<T extends F14Response>(
+    endpoint: string, useAuth: boolean = false, headers?: RequestHeaders
+  ): Promise<T> {
+    const req = () => this.#generateRequest('GET', endpoint, useAuth, headers ?? {})
+    const result = this.#executeRequest(req)
+    return result as Promise<T>
+  }
+
+  /**
+   * Execute POST fetch
+   * @param endpoint String that set endpoint or url (in case ApiUrl is empty)
+   * @param useAuth Boolean state that says use auth or no. Default: false
+   * @param body: The body argument provides the request body
+   * @param headers A Headers object
+   * @returns
+   */
+  post<T extends F14Response>(
+    endpoint: string, useAuth: boolean = false, body?: RequestBody, headers?: RequestHeaders
+  ): Promise<T> {
+    const req = () => this.#generateRequest('POST', endpoint, useAuth, headers ?? {}, body)
+    const result = this.#executeRequest(req)
+    return result as Promise<T>
+  }
+
+  /**
+   * Execute PATCH fetch
+   * @param endpoint String that set endpoint or url (in case ApiUrl is empty)
+   * @param useAuth Boolean state that says use auth or no. Default: false
+   * @param body: The body argument provides the request body
+   * @param headers A Headers object
+   * @returns
+   */
+  patch<T extends F14Response>(
+    endpoint: string, useAuth: boolean = false, body?: RequestBody, headers?: RequestHeaders
+  ): Promise<T> {
+    const req = () => this.#generateRequest('PATCH', endpoint, useAuth, headers ?? {}, body)
+    const result = this.#executeRequest(req)
+    return result as Promise<T>
+  }
+
+  /**
+   * Execute PUT fetch
+   * @param endpoint String that set endpoint or url (in case ApiUrl is empty)
+   * @param useAuth Boolean state that says use auth or no. Default: false
+   * @param body: The body argument provides the request body
+   * @param headers A Headers object
+   * @returns
+   */
+  put<T extends F14Response>(
+    endpoint: string, useAuth: boolean = false, body?: RequestBody, headers?: RequestHeaders
+  ): Promise<T> {
+    const req = () => this.#generateRequest('PUT', endpoint, useAuth, headers ?? {}, body)
+    const result = this.#executeRequest(req)
+    return result as Promise<T>
+  }
+
+  /**
+   * Execute DELETE fetch
+   * @param endpoint String that set endpoint or url (in case ApiUrl is empty)
+   * @param useAuth Boolean state that says use auth or no. Default: false
+   * @param headers A Headers object
+   * @returns
+   */
+  delete<T extends F14Response>(
+    endpoint: string, useAuth: boolean = false, headers?: RequestHeaders
+  ): Promise<T> {
+    const req = () => this.#generateRequest('DELETE', endpoint, useAuth, headers ?? {})
+    const result = this.#executeRequest(req)
+    return result as Promise<T>
+  }
 }
 
 export default F14

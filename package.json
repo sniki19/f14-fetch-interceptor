@@ -1,26 +1,32 @@
 {
-	"name": "f14-fetch-interceptor",
-	"version": "0.1.6",
-	"description": "A simple tool for fetch data and intercept errors",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"clear:dist": "rimraf dist",
-		"build": "npm run clear:dist && tsc",
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/sniki19/f14-fetch-interceptor.git"
-	},
-	"author": "Artem Kurilik",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/sniki19/f14-fetch-interceptor/issues"
-	},
-	"homepage": "https://github.com/sniki19/f14-fetch-interceptor#readme",
-	"devDependencies": {
-		"rimraf": "^5.0.0",
-		"typescript": "^5.0.4"
-	}
+  "name": "f14-fetch-interceptor",
+  "version": "0.2.0",
+  "description": "A simple tool for fetch data and intercept errors",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clear:dist": "rimraf dist",
+    "build": "npm run lint && npm run clear:dist && tsc",
+    "lint": "eslint . -c .eslintrc --ext .ts",
+    "lint:fix": "npm run lint -- --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sniki19/f14-fetch-interceptor.git"
+  },
+  "author": "Artem Kurilik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sniki19/f14-fetch-interceptor/issues"
+  },
+  "homepage": "https://github.com/sniki19/f14-fetch-interceptor#readme",
+  "devDependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "@types/eslint": "^8.37.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "eslint": "^8.39.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.4"
+  }
 }

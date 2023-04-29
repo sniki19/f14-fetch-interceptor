@@ -1,0 +1,50 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "no-console": "warn",
+    "no-debugger": "warn",
+    "no-var": "error",
+    "prefer-const": ["error", {
+      "destructuring": "any",
+      "ignoreReadBeforeAssign": false
+    }],
+    "quotes": ["error", "single"],
+    "jsx-quotes": ["warn", "prefer-single"],
+    "quote-props": ["error", "as-needed"],
+    "indent": ["error", 2, {
+      "SwitchCase": 1,
+      "VariableDeclarator": 1,
+      "MemberExpression": 1,
+      "FunctionDeclaration": { "body": 1, "parameters": 1 },
+      "FunctionExpression": { "body": 1, "parameters": 1 },
+      "ArrayExpression": "first",
+      "ObjectExpression": "first",
+      "ImportDeclaration": "first"
+    }],
+    "no-mixed-spaces-and-tabs": [ "warn", "smart-tabs"],
+    "max-lines": ["error", {
+      "max": 300,
+      "skipBlankLines": true,
+      "skipComments": true
+    }],
+    "max-len": ["error", {
+      "code": 120,
+      "ignoreComments": true,
+      "ignoreUrls": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true,
+      "ignoreRegExpLiterals": true
+    }],
+    "semi": ["warn", "never", {
+      "beforeStatementContinuationChars": "any"
+    }],
+    "arrow-spacing": ["error", {
+      "before": true,
+      "after": true
+    }]
+  }
+}
