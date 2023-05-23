@@ -1,6 +1,15 @@
 import { AnyAction, Dispatch } from '@reduxjs/toolkit'
 import { F14Response, F14Settings, RequestBody, RequestHeaders, RequestOptions } from './types'
 
+// type AnyAction = {
+//   type: string
+//   [extraProps: string]: any
+// }
+
+// type Dispatch<A extends AnyAction = AnyAction> = {
+//   <T extends A>(action: T): T
+// }
+
 type Store = {
   dispatch: Dispatch<AnyAction>,
   getState: () => any

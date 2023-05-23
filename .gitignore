@@ -6,3 +6,6 @@
 
 # misc
 package-lock.json
+
+#tests
+coverage

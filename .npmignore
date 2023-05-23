@@ -9,3 +9,9 @@ package-lock.json
 .eslintignore
 .eslintrc
 .gitignore
+tsconfig.json
+
+#tests
+coverage
+jest.config.ts
+*.d.ts
