@@ -1,6 +1,6 @@
 {
   "name": "f14-fetch-interceptor",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A simple tool for fetch data and intercept errors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/sniki19/f14-fetch-interceptor.git"
   },
-  "author": "Artem Kurilik",
+  "author": "Sniki19 (Artem Kurilik)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sniki19/f14-fetch-interceptor/issues"

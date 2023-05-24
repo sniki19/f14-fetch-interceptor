@@ -12,6 +12,6 @@ package-lock.json
 tsconfig.json
 
 #tests
-coverage
+/coverage
 jest.config.ts
-*.d.ts
+webworker.iterable.generated.d.ts
