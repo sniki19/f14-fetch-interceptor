@@ -93,6 +93,22 @@ describe('F14 request options', () => {
     const call = spy.mock.calls[0][0] as Request
     expect(Array.from(call.headers.keys()).length).toBe(1)
     expect(call.headers.get('Authorization')).toEqual('Bearer token')
+    expect(fetch).toHaveBeenCalledTimes(1)
+  })
+
+  test('should check not implemented auth header', async () => {
+    mockFetch({})
+
+    const f14 = new F14()
+
+    const result = await f14.get(url, true)
+
+    expect(result).toEqual({
+      ok: false,
+      status: 400,
+      data: 'Auth feature isn\'t implemented. Please, set auth().'
+    })
+    expect(fetch).toHaveBeenCalledTimes(0)
   })
 })
 
@@ -206,5 +222,34 @@ describe('F14 with store', () => {
       data: undefined
     })
     expect(spy).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('F14 logger', () => {
+  test('should return log data', async () => {
+    mockFetch({})
+
+    const f14 = new F14()
+    await f14.get(url + '/endpoint1')
+    await f14.post(url + '/endpoint2')
+
+    const logChunk1 = f14.getLog()
+    expect(logChunk1.length).toBe(2)
+    expect(logChunk1).toEqual([{
+      url: url + '/endpoint1',
+      method: 'GET'
+    }, {
+      url: url + '/endpoint2',
+      method: 'POST'
+    }])
+
+    await f14.get(url + '/endpoint3')
+
+    const logChunk2 = f14.getLog()
+    expect(logChunk2.length).toBe(1)
+    expect(logChunk2).toEqual([{
+      url: url + '/endpoint3',
+      method: 'GET'
+    }])
   })
 })

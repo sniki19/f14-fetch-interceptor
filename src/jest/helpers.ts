@@ -19,8 +19,6 @@ export const spyAndMockFetch = (response: any, options?: {
   ok?: boolean,
   status?: number
 }) => {
-  // const ok = options?.ok ?? typeof options?.status === 'number' ? !!(options.status / 400 >= 1) : true,
-
   const spyFetch = jest.spyOn(global, 'fetch')
     .mockImplementation(
       jest.fn(() => {

@@ -1,18 +1,19 @@
-import { AnyAction, Dispatch } from '@reduxjs/toolkit'
+import { AnyAction, Dispatch, Store } from '@reduxjs/toolkit'
+import { cacheStore } from './cache'
 import { F14Response, F14Settings, RequestBody, RequestHeaders, RequestOptions } from './types'
-
-type Store = {
-  dispatch: Dispatch<AnyAction>,
-  getState: () => any
-}
 
 class F14 {
   #apiUrl: string = '' // TODO: Add conditional type url | endpoint
   #defaultHeaders: RequestHeaders = {}
   #userHeaders: RequestHeaders = {}
-  #store: Store = {
+  #store: Pick<Store, 'dispatch' | 'getState'> = {
     dispatch: (() => void 0) as Dispatch<AnyAction>,
     getState: () => void 0
+  }
+  #cache: ReturnType<typeof cacheStore>
+
+  constructor() {
+    this.#cache = cacheStore()
   }
 
   #getAuth: (dispatch: Dispatch<AnyAction>, getState: () => any) => string | void = () => void 0 // TODO: Add typing
@@ -37,6 +38,10 @@ class F14 {
   intercept401(cb: (dispatch: Dispatch<AnyAction>, getState: () => any) => Promise<true>) {
     this.#interceptResponse = cb
     return this
+  }
+
+  getLog() {
+    return this.#cache.collect()
   }
 
   #generateRequest( // TODO: Add conditional type url | endpoint
@@ -74,14 +79,20 @@ class F14 {
     return new Request(targetUrl, options)
   }
 
+  #fetch(req: Request): Promise<any> {
+    this.#cache.addNote(req)
+
+    return fetch(req)
+  }
+
   async #executeRequest(req: () => Request): Promise<F14Response> {
     try {
-      let response = await fetch(req())
+      let response = await this.#fetch(req())
 
       if (response.status === 401) {
         const result = await this.#interceptResponse(this.#store.dispatch, this.#store.getState)
         if (result) {
-          response = await fetch(req())
+          response = await this.#fetch(req())
         }
       }
 
