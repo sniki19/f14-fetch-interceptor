@@ -2,20 +2,20 @@ export const fakeList = {
   count: 2,
   items: [
     {
-      id: '645b9bd62148f3d7135fd0d4',
+      id: 'stringid1',
       username: 'Sienna Ellis',
-      email: 'SiennaEllis541@gmail.com',
+      email: 'SiennaEllis541@test.test',
       password: '1234567890'
     },
     {
-      id: '645b9bd62148f3d7135fd0d5',
+      id: 'stringid2',
       username: 'Jaylen Castillo',
-      email: 'Jaylen.Castillo0@yahoo.com',
+      email: 'Jaylen.Castillo0@test.test',
       password: 'aa12345678'
     }
   ]
 } as const
 
-export const url = 'https://mockside.vercel.app/api/users'
-export const apiUrl = 'https://mockside.vercel.app/api'
+export const url = 'https://test.test/api/users'
+export const apiUrl = 'https://test.test/api'
 export const apiEndpoint = '/users'
