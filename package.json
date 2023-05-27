@@ -1,6 +1,6 @@
 {
   "name": "f14-fetch-interceptor",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "A simple tool for fetch data and intercept errors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
